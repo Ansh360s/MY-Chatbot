@@ -1,0 +1,36 @@
+=== New chat started at 2025-11-26T21:00:10.427895 ===
+You: hii
+Bot: Hello! What's your name?
+You: anshul
+Bot: I don't fully understand that yet, but I'm learning. Try using /help 🙂
+You: i am anshul
+Bot: I don't fully understand that yet, but I'm learning. Try using /help 🙂
+You: my name is anshul
+Bot: I don't know your name yet. What should I call you?
+You: ansh
+Bot: Nice to meet you, ansh! 💫
+You: /help
+Bot: Commands:
+  /help  - show this message
+  /time  - show current time
+  /joke  - tell a joke
+  /about - about this bot
+  /log   - tell where chat is saved
+You: /joke
+Bot: I told my computer I needed a break, and it said 'No problem, I’ll go to sleep.' 😴
+=== New chat started at 2025-11-27T07:42:56.201096 ===
+You: hello
+Bot: Hello! What's your name?
+You: my name is anshul
+Bot:  What should I call you?
+You: ansh
+Bot: Nice to meet you, ansh! 💫
+You: /joke
+Bot: I told my computer I needed a break, and it said 'No problem, I’ll go to sleep.' 😴
+You: /help
+Bot: Commands:
+  /help  - show this message
+  /time  - show current time
+  /joke  - tell a joke
+  /about - about this bot
+  /log   - tell where chat is saved

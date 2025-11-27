@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My AI Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #020617;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --user: #38bdf8;
+      --bot: #a5b4fc;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 900px;
+      margin: 16px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow:
+        0 20px 30px rgba(15, 23, 42, 0.8),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.96), rgba(6, 95, 70, 0.4));
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bot-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #38bdf8, #22c55e 40%, #4f46e5 80%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+      font-size: 20px;
+    }
+
+    .title-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-text h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .title-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.16);
+      border: 1px solid rgba(45, 212, 191, 0.4);
+      color: #a5f3fc;
+      font-size: 11px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .pill-mood {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(129, 140, 248, 0.5);
+      background: rgba(30, 64, 175, 0.3);
+      color: #e5e7eb;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 14px 16px;
+      overflow-y: auto;
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 60%);
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 72%;
+      padding: 8px 11px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      border: 1px solid transparent;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message-label {
+      font-size: 11px;
+      margin-bottom: 2px;
+      opacity: 0.8;
+    }
+
+    .user .message-bubble {
+      background: linear-gradient(to right, rgba(56, 189, 248, 0.2), rgba(59, 130, 246, 0.24));
+      border-color: rgba(56, 189, 248, 0.65);
+      color: #e0f2fe;
+      text-align: left;
+    }
+
+    .bot .message-bubble {
+      background: linear-gradient(to right, rgba(55, 65, 81, 0.9), rgba(30, 64, 175, 0.75));
+      border-color: rgba(129, 140, 248, 0.65);
+      color: #e5e7eb;
+    }
+
+    .system .message-bubble {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(148, 163, 184, 0.7);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .input-bar {
+      padding: 12px 12px 12px;
+      border-top: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at bottom, #020617 0, #000 80%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #user-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    #user-input::placeholder {
+      color: #6b7280;
+    }
+
+    #user-input:focus {
+      border-color: rgba(34, 197, 94, 0.85);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+      background: #020617;
+    }
+
+    .input-hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .hint-pill {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .hint-pill:hover {
+      background: rgba(55, 65, 81, 0.85);
+      border-color: rgba(209, 213, 219, 0.8);
+      color: #e5e7eb;
+    }
+
+    .side-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(31, 41, 55, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      transition: background 0.15s, transform 0.05s, border-color 0.15s, box-shadow 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      border-color: rgba(34, 197, 94, 0.95);
+      color: #022c22;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 14px rgba(15, 23, 42, 0.9);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-ghost-danger {
+      background: rgba(127, 29, 29, 0.7);
+      border-color: rgba(248, 113, 113, 0.8);
+      color: #fee2e2;
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        margin: 8px;
+        border-radius: 14px;
+      }
+
+      .input-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .side-buttons {
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      .side-buttons .btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="title-wrap">
+        <div class="bot-avatar">🤖</div>
+        <div class="title-text">
+          <h1>My AI Chatbot</h1>
+          <span>Python · Flask · DialoGPT · Wikipedia</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="pill">
+          <div class="pill-dot"></div>
+          <span>Online</span>
+        </div>
+        <div class="pill-mood" id="mood-indicator">
+          Mood: Flexible
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div id="chat-box"></div>
+
+      <div class="input-bar">
+        <div class="input-main">
+          <input
+            id="user-input"
+            type="text"
+            placeholder="Type a message… (try: 'bot mood', 'who is Virat Kohli', '2+2', 'my name is Ansh')"
+          />
+
+          <div class="input-hints">
+            <div class="hint-pill" onclick="quickMsg('bot mood')">Change mood 🎭</div>
+            <div class="hint-pill" onclick="quickMsg('my name is Ansh')">Set name 🧑</div>
+            <div class="hint-pill" onclick="quickMsg('who is Virat Kohli')">Wiki example 📚</div>
+            <div class="hint-pill" onclick="quickMsg('2+2')">Math example ➕</div>
+          </div>
+        </div>
+
+        <div class="side-buttons">
+          <button class="btn btn-primary" onclick="sendMessage()">
+            ➤ Send
+          </button>
+          <button class="btn btn-ghost" onclick="sendMoodCommand()">
+            🎭 Bot mood
+          </button>
+          <button class="btn btn-ghost-danger" onclick="clearChat()">
+            🧹 Clear chat
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const moodIndicator = document.getElementById("mood-indicator");
+
+    function addMessage(text, sender = "bot") {
+      const row = document.createElement("div");
+      row.className = `message-row ${sender}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "message-bubble";
+
+      const label = document.createElement("div");
+      label.className = "message-label";
+
+      if (sender === "user") {
+        label.textContent = "You";
+      } else if (sender === "bot") {
+        label.textContent = "Bot";
+      } else {
+        label.textContent = "System";
+        row.classList.add("system");
+      }
+
+      bubble.appendChild(label);
+      bubble.appendChild(document.createTextNode(text));
+
+      row.appendChild(bubble);
+      chatBox.appendChild(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      if (sender === "bot") {
+        // crude detection: if bot mood was changed, update header text
+        if (text.includes("mood now")) {
+          moodIndicator.textContent = "Mood: " + text.replace("Okay! I'll talk in", "").replace("mood now", "").trim();
+        }
+      }
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      userInput.value = "";
+
+      try {
+        const resp = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text }),
+        });
+
+        const data = await resp.json();
+        addMessage(data.reply, "bot");
+      } catch (err) {
+        addMessage("Error talking to the server. Is Flask still running?", "system");
+      }
+    }
+
+    function sendMoodCommand() {
+      quickMsg("bot mood");
+    }
+
+    function clearChat() {
+      chatBox.innerHTML = "";
+      addMessage("Chat cleared locally. The bot still remembers you while the server is running.", "system");
+    }
+
+    function quickMsg(text) {
+      userInput.value = text;
+      sendMessage();
+    }
+
+    userInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    // Initial helper message
+    addMessage(
+      "Hi! I'm your AI chatbot.\n\n" +
+      "Try:\n" +
+      "• 'my name is Ansh'\n" +
+      "• 'bot mood' → choose 1–7\n" +
+      "• 'who is Virat Kohli'\n" +
+      "• 'what is machine learning'\n" +
+      "• '2+2'\n",
+      "system"
+    );
+  </script>
+</body>
+</html>
